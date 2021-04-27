@@ -21,7 +21,10 @@ public class StateMachine : MonoBehaviour
 
     public int updatesPerSecond = 5;
     // Use this for initialization
-    void Start() { }
+    void Start()
+    {
+        
+    }
 
     public void ChangeStateDelayed(State newState, float delay)
     {
