@@ -104,6 +104,7 @@ public class FPSController : MonoBehaviour
     public void BallReturned()
     {
         ball = null;
+        canThrow = true;
     }
 
 

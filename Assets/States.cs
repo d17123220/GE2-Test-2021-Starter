@@ -15,15 +15,23 @@ public class SeekPlayerState : State
     {
         GameObject player = Camera.main.gameObject;
         GameObject ball = player.GetComponent<FPSController>().GetBall();
+        GameObject ballHolder = null;
+
+        if (null != ball && null != ball.transform.parent)
+            ballHolder = ball.transform.parent.gameObject;
         
-        // if ball exists
-        if (null != ball)
+        // if ball exists and not in dog's mouth
+        if (null != ball && null == ballHolder)
             // chnage state to Fetch
-            owner.ChangeStateDelayed(new FetchBallState(),1.5f);
+            owner.ChangeState(new FetchBallState());
 
+        // if dog close to the player and ball is in the mouth
+        if (Vector3.Distance(owner.transform.position, player.transform.position) <= 10.0f && null != ballHolder)
+            // change state to Drop Ball
+            owner.ChangeState(new DropBallState());
 
-        // if dog close to the player
-        if (Vector3.Distance(owner.transform.position, player.transform.position) <= 10.0f)
+        // if dog close to the player and no ball in the mouth
+        if (Vector3.Distance(owner.transform.position, player.transform.position) <= 10.0f && null == ballHolder)
             // change state to Look at Player
             owner.ChangeState(new LookAtPlayerState());
 
@@ -57,10 +65,10 @@ public class LookAtPlayerState : State
 
         owner.GetComponent<LookAt>().lookTarget = player;
 
-        // if ball exists
+        // if ball exists and not in dog's mouth
         if (null != ball)
             // chnage state to Fetch
-            owner.ChangeStateDelayed(new FetchBallState(),1.5f);
+            owner.ChangeState(new FetchBallState());
 
         // if dog far away from the player
         if (Vector3.Distance(owner.transform.position, player.transform.position) > 10.0f)
@@ -79,110 +87,93 @@ public class FetchBallState : State
 {
     public override void Enter()
     {
-        base.Enter();
+        GameObject player = Camera.main.gameObject;
+        GameObject ball = player.GetComponent<FPSController>().GetBall();
+
+        // play bark sound
+        owner.GetComponent<Barking>().Bark();
+
+        // start fetching
+        owner.GetComponent<Seek>().targetGameObject = ball;
+        owner.GetComponent<Seek>().enabled = true;
     }
 
     public override void Think()
     {
-        base.Think();
+        GameObject player = Camera.main.gameObject;
+        GameObject ball = player.GetComponent<FPSController>().GetBall();
+        GameObject dogBody = owner.transform.Find("dog").gameObject;
+
+        owner.GetComponent<Seek>().targetGameObject = ball;
+
+        // if ball in vicinity (max 1.1 of dog size) and ball is lying (less than it's size)
+        if (Vector3.Distance(ball.transform.position, owner.transform.position) < dogBody.transform.localScale.z * 1.1f &&
+                ball.transform.position.y < ball.transform.localScale.y)
+            // pickup ball
+            owner.ChangeState(new PickupBallState());
     }
 
     public override void Exit()
     {
-        base.Exit();
+        owner.GetComponent<Seek>().targetGameObject = null;
+        owner.GetComponent<Seek>().enabled = false;
+        // add proverbal handbrake
+        owner.GetComponent<Boid>().acceleration = new Vector3(0.0f,0.0f,0.0f);
+        owner.GetComponent<Boid>().velocity = new Vector3(0.0f,0.0f,0.0f);
+        owner.GetComponent<Boid>().force = new Vector3(0.0f,0.0f,0.0f);
     }
 }
 
 public class PickupBallState : State
 {
-        public override void Enter()
+    public override void Enter()
     {
-        base.Enter();
+        GameObject player = Camera.main.gameObject;
+        GameObject ball = player.GetComponent<FPSController>().GetBall();
+        owner.GetComponent<PickUpAndDrop>().enabled = true;
+        owner.GetComponent<PickUpAndDrop>().PickUp(ball);
     }
 
     public override void Think()
     {
-        base.Think();
+        GameObject player = Camera.main.gameObject;
+        GameObject ball = player.GetComponent<FPSController>().GetBall();
+
+        // if ball successfully picked up
+        if (owner.GetComponent<PickUpAndDrop>().ballPicked)
+            // return to player
+            owner.ChangeState(new SeekPlayerState());
+
     }
 
     public override void Exit()
     {
-        base.Exit();
+        owner.GetComponent<PickUpAndDrop>().enabled = false;
     }
 }
 
 public class DropBallState : State
 {
-        public override void Enter()
+    public override void Enter()
     {
-        base.Enter();
+        GameObject player = Camera.main.gameObject;
+        GameObject ball = player.GetComponent<FPSController>().GetBall();
+        owner.GetComponent<PickUpAndDrop>().enabled = true;
+        owner.GetComponent<PickUpAndDrop>().Drop();
     }
 
-    public override void Think()
-    {
-        base.Think();
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-}
-
-
-public class DogActive : State
-{
     public override void Think()
     {
         GameObject player = Camera.main.gameObject;
         GameObject ball = player.GetComponent<FPSController>().GetBall();
-        GameObject ballParent = null;
-        if (null != ball)
-            ballParent = ball.transform.parent.gameObject;
 
-        owner.ChangeState(new LookAtPlayerState());
+        // move back to seek player if ball was dropped
+        if (!owner.GetComponent<PickUpAndDrop>().ballPicked)
+             owner.ChangeState(new SeekPlayerState());
+    }
 
-
-        /*
-        // if ball doesn't exist and dog near player
-        if (null == ball && Vector3.Distance(owner.transform.position, player.transform.position) <= 10.0f)
-        {
-            // look at player
-            owner.ChangeState(new LookAtPlayerState());
-        }
-        
-        // if ball doesn't exists and dog far from player
-        if (null == ball && Vector3.Distance(owner.transform.position, player.transform.position) > 10.0f)
-        {
-            // come to player
-            owner.ChangeState(new SeekPlayerState());
-        }
-
-        // if ball exists and in the wild      
-        if (null != ball &&  null == ballParent)
-        {
-            // if dog close to the ball (within 1.5 scales of it's body)
-            GameObject dogBody = owner.transform.Find("dog").gameObject;
-            if (Vector3.Distance(ball.transform.position, owner.transform.position) < dogBody.transform.localScale.z * 1.5f)
-                // pickup the ball
-                owner.ChangeState(new PickupBallState());
-            else
-                // go and fetch the ball
-                owner.ChangeStateDelayed(new FetchBallState(),1);
-        }
-        
-        // if ball exists and in dog's mouth
-        if (null != ball && null != ballParent)
-        {
-            // if alreday close to the player
-            if (Vector3.Distance(owner.transform.position, player.transform.position) <= 10.0f)
-                // drop the ball
-                owner.ChangeState(new DropBallState());
-            else
-                // return to player
-                owner.ChangeState(new SeekPlayerState());
-        }
-
-        */
+    public override void Exit()
+    {
+        owner.GetComponent<PickUpAndDrop>().enabled = false;
     }
 }

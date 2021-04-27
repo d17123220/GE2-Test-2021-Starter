@@ -507,9 +507,9 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   speed: 50
   lookSpeed: 150
-  throwForce: 30
+  throwForce: 1000
   ballInFrontofCamera: 3
-  ballObject: {fileID: 0}
+  ballObject: {fileID: 3627371103750170129, guid: b471fff3b0213bb4882085e357ee2c4e, type: 3}
   canThrow: 1
   allowPitch: 1
   style:
@@ -875,6 +875,7 @@ GameObject:
   - component: {fileID: 1503941577}
   - component: {fileID: 1503941573}
   - component: {fileID: 1503941578}
+  - component: {fileID: 1503941579}
   - component: {fileID: 1503941572}
   - component: {fileID: 1503941571}
   - component: {fileID: 1503941575}
@@ -1088,6 +1089,23 @@ MonoBehaviour:
   boid: {fileID: 0}
   targetGameObject: {fileID: 0}
   target: {x: 0, y: 0, z: 0}
+--- !u!114 &1503941579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503941570}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4af97f7c33186343b6bfd60914c4d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ballObject: {fileID: 0}
+  pickupSpeed: 5
+  throwForce: 150
+  LookAtSpeed: 10
+  ballPicked: 0
 --- !u!1 &1904013037
 GameObject:
   m_ObjectHideFlags: 0
