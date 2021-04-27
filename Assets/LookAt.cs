@@ -4,26 +4,31 @@ using UnityEngine;
 
 public class LookAt : MonoBehaviour
 {
-    public float maxTurnSpeed = 135.0f;
-    public GameObject lookTarget = null;
+    public float maxTurnSpeed = 10.0f;
+    public GameObject lookTarget;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        
+
         if (null != lookTarget)
         {
+                        
             // get direction of the target
             Vector3 direction = lookTarget.transform.position - transform.position;
-
+            direction.y = 0.0f;
+            
             // use quaternion and lerp to look at target
-            Quaternion toRotation = Quaternion.FromToRotation(transform.forward, direction);
-            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, maxTurnSpeed * Time.time);
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, maxTurnSpeed * Time.deltaTime);
         }
     }
 }
