@@ -75,4 +75,18 @@ public class StateMachine : MonoBehaviour
             currentState.Think();
         }
     }
+
+    public void SetGlobalState(State state)
+    {
+        if (globalState != null)
+        {
+            globalState.Exit();
+        }
+        globalState = state;
+        if (globalState != null)
+        {
+            globalState.owner = this;
+            globalState.Enter();
+        }        
+    }
 }

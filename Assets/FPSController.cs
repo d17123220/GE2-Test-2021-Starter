@@ -12,6 +12,7 @@ public class FPSController : MonoBehaviour
     public float ballInFrontofCamera = 3.0f;
     public GameObject ballObject;
     public bool canThrow = true;
+    private GameObject ball = null;
 
     public bool allowPitch = true;
 
@@ -81,7 +82,7 @@ public class FPSController : MonoBehaviour
             return;
 
         // spawn a ball slightly ahead of the camera's position
-        GameObject ball = GameObject.Instantiate(ballObject);
+        ball = GameObject.Instantiate(ballObject);
         ball.transform.position = mainCamera.transform.position + mainCamera.transform.forward * ballInFrontofCamera;
 
         // prevent from throwing multiple balls at the same time
@@ -93,10 +94,18 @@ public class FPSController : MonoBehaviour
 
         // find a dog
         GameObject dog = GameObject.Find("/dog");
-
-        // tell dog that ball has been thrown
-
     }
+
+    public GameObject GetBall()
+    {
+        return ball;
+    }
+
+    public void BallReturned()
+    {
+        ball = null;
+    }
+
 
     bool active = false;
 
@@ -114,6 +123,9 @@ public class FPSController : MonoBehaviour
         }
         //Cursor.lockState = CursorLockMode.Confined;
   
+        if (null != ball)
+            canThrow = false;
+        
         float mouseX, mouseY;
         float speed = this.speed;
 
