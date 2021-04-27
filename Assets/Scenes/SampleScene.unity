@@ -1103,7 +1103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballObject: {fileID: 0}
   pickupSpeed: 5
-  throwForce: 150
+  throwForce: 300
   LookAtSpeed: 10
   ballPicked: 0
 --- !u!1 &1904013037
