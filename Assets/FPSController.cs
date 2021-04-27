@@ -8,6 +8,10 @@ public class FPSController : MonoBehaviour
     public GameObject mainCamera;
     public float speed = 50.0f;
     public float lookSpeed = 150.0f;
+    public float throwForce = 1000.0f;
+    public float ballInFrontofCamera = 3.0f;
+    public GameObject ballObject;
+    public bool canThrow = true;
 
     public bool allowPitch = true;
 
@@ -70,6 +74,30 @@ public class FPSController : MonoBehaviour
             
     }
 
+    void ThrowBall()
+    {
+        // check if ball already exists
+        if (canThrow == false)
+            return;
+
+        // spawn a ball slightly ahead of the camera's position
+        GameObject ball = GameObject.Instantiate(ballObject);
+        ball.transform.position = mainCamera.transform.position + mainCamera.transform.forward * ballInFrontofCamera;
+
+        // prevent from throwing multiple balls at the same time
+        canThrow = false;
+
+        // add initial force to it
+        Rigidbody rb = ball.GetComponent<Rigidbody>();
+        rb.AddForce(mainCamera.transform.forward * throwForce);
+
+        // find a dog
+        GameObject dog = GameObject.Find("/dog");
+
+        // tell dog that ball has been thrown
+
+    }
+
     bool active = false;
 
     void Activate()
@@ -116,5 +144,11 @@ public class FPSController : MonoBehaviour
         float contStrafe = Input.GetAxis("Horizontal");
         Walk(contWalk * speed * Time.deltaTime);
         Strafe(contStrafe * speed * Time.deltaTime);
+
+        // Throw the ball
+        if (Input.GetKey(KeyCode.Space))
+        {
+            ThrowBall();
+        }
     }
 }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657707, g: 0.49641377, b: 0.5748174, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -507,6 +507,10 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   speed: 50
   lookSpeed: 150
+  throwForce: 1000
+  ballInFrontofCamera: 3
+  ballObject: {fileID: 3627371103750170129, guid: b471fff3b0213bb4882085e357ee2c4e, type: 3}
+  canThrow: 1
   allowPitch: 1
   style:
     m_Name: 
@@ -631,10 +635,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df9abdc16a6d6624d9b99b72bafa2fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frequency: 1
-  amplitude: 20
-  b: {fileID: 0}
-  theta: 0
 --- !u!1 &1296423582
 GameObject:
   m_ObjectHideFlags: 0
