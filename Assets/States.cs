@@ -23,19 +23,22 @@ public class SeekPlayerState : State
 
 public class LookAtPlayerState : State
 {
-        public override void Enter()
+    GameObject player = Camera.main.gameObject;
+        
+    public override void Enter()
     {
-        base.Enter();
+        owner.GetComponent<LookAt>().enabled = true;
     }
 
     public override void Think()
     {
-        base.Think();
+        owner.GetComponent<LookAt>().lookTarget = player;
     }
 
     public override void Exit()
     {
-        base.Exit();
+        owner.GetComponent<LookAt>().lookTarget = null;
+        owner.GetComponent<LookAt>().enabled = false;
     }
 }
 
